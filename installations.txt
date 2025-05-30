@@ -1,0 +1,17 @@
+Installations:- 
+
+go mod init gitHub.com/suraj/nitabuddy
+go get github.com/gorilla/mux
+go get go.mongodb.org/mongo-driver/mongo
+go get github.com/golang-jwt/jwt/v5
+go get golang.org/x/crypto/bcrypt
+
+
+Sequence :-
+📍 database/database.go
+📍 models/user.go
+📍 utils/jwt.go
+📍 handlers/auth.go
+📍 routes/routes.go
+📍 main.go
+📍 Run and Test
