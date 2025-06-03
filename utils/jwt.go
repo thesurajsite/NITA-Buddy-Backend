@@ -29,7 +29,7 @@ func ExtractUserIDFromToken(r *http.Request) (primitive.ObjectID, error) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || claims["user_id"] == nil {
-		return primitive.NilObject, error.New("invalid claims")
+		return primitive.NilObjectID, errors.New("invalid claims")
 	}
 
 	userIDHex := claims["user_id"].(string)
