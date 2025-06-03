@@ -1,10 +1,11 @@
 Installations:- 
 
-go mod init gitHub.com/suraj/nitabuddy
+go mod init github.com/suraj/nitabuddy
 go get github.com/gorilla/mux
 go get go.mongodb.org/mongo-driver/mongo
 go get github.com/golang-jwt/jwt/v5
 go get golang.org/x/crypto/bcrypt
+go get github.com/joho/godotenv
 
 
 Sequence :-

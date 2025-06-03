@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,7 +19,8 @@ func Connect() (*mongo.Client, *mongo.Collection) {
 	defer cancel()
 
 	// MongoDB connection string
-	connectionString := "example"
+	connectionString := os.Getenv("MONGO_URI")
+	log.Println("MONGO_URI:", connectionString)
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectionString))
 	if err != nil {
