@@ -18,7 +18,7 @@ type User struct {
 	Name       string             `bson:""`
 	Enrollment string             `bson:"enrollment" json:"enrollment"`
 	Hostel     string             `bson:"hostel" json:"branch"`
-	Branch     string             `bson:"branch" json"branch"`
+	Branch     string             `bson:"branch" json:"branch"`
 	Year       string             `bson:"year" json:"year"`
 	CreatedAt  time.Time          `bson:"created_at" json:"created_at"`
 }
