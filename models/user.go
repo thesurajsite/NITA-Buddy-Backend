@@ -17,7 +17,7 @@ type User struct {
 	Password   string             `bson:"password" json:"-"`
 	Name       string             `bson:""`
 	Enrollment string             `bson:"enrollment" json:"enrollment"`
-	Hostel     string             `bson:"hostel" json:"branch"`
+	Hostel     string             `bson:"hostel" json:"hostel"`
 	Branch     string             `bson:"branch" json:"branch"`
 	Year       string             `bson:"year" json:"year"`
 	CreatedAt  time.Time          `bson:"created_at" json:"created_at"`
