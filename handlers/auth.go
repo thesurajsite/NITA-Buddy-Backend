@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/suraj/nitabuddy/models"
@@ -140,6 +141,7 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) generateJWT(userID primitive.ObjectID) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID.Hex(),
+		"iat":     time.Now().Unix(), // gives new token at every login
 		// No expiration - Token Never Expires
 	}
 
