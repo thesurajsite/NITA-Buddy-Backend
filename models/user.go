@@ -81,3 +81,17 @@ func (m *UserModel) VerifyPassword(user *User, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	return err == nil
 }
+
+func (m *UserModel) GetByID(id primitive.ObjectID) (*User, error) {
+	var user User
+	err := m.collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
+
+	if err != nil {
+		if err == mongo.ErrNilDocument {
+			return nil, errors.New("User not found")
+		}
+		return nil, err
+	}
+
+	return &user, nil
+}

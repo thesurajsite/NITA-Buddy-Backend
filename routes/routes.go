@@ -12,4 +12,6 @@ func Setup(r *mux.Router, authHandler *handlers.AuthHandler) {
 	r.HandleFunc("/register", authHandler.Register).Methods("POST")
 	r.HandleFunc("/login", authHandler.Login).Methods("POST")
 	r.HandleFunc("/logout", authHandler.Logout).Methods("POST")
+
+	r.HandleFunc("/user/details", authHandler.GetUserDetails).Methods("GET")
 }

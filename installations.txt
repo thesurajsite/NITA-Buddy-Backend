@@ -16,3 +16,31 @@ Sequence :-
 📍 routes/routes.go
 📍 main.go
 📍 Run and Test
+
+
+NITA Buddy Backend/
+│
+├── main.go
+├── go.mod
+├── go.sum
+├── .env
+│
+├── routes/
+│   └── routes.go              # Central place to register all routes
+│
+├── handlers/
+│   ├── auth.go                # Login, signup, token-related
+│   ├── user_handler.go        # getUserDetails, etc.
+│   ├── order_handler.go       # getUserOrders, getOrderDetails, etc.
+│
+├── models/
+│   ├── user.go
+│   ├── order.go
+│
+├── database/
+│   └── mongo.go
+│
+├── utils/
+│   ├── jwt.go
+│   └── response.go
+
