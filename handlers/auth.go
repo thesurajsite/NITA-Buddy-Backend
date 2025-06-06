@@ -30,6 +30,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Password   string `json:"password"`
 		Name       string `json:"name"`
 		Enrollment string `json:"enrollment"`
+		Phone      string `json:"phone"`
 		Hostel     string `json:"hostel"`
 		Branch     string `json:"branch"`
 		Year       string `json:"year"`

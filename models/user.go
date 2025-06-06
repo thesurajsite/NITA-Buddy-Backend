@@ -17,6 +17,7 @@ type User struct {
 	Password   string             `bson:"password" json:"-"`
 	Name       string             `bson:""`
 	Enrollment string             `bson:"enrollment" json:"enrollment"`
+	Phone      string             `bson:"phone" json:"phone"`
 	Hostel     string             `bson:"hostel" json:"hostel"`
 	Branch     string             `bson:"branch" json:"branch"`
 	Year       string             `bson:"year" json:"year"`
@@ -31,7 +32,7 @@ func NewUserModel(collection *mongo.Collection) *UserModel {
 	return &UserModel{collection: collection}
 }
 
-func (m *UserModel) Create(email, password, name, enrollment, hostel, branch, year string) (*User, error) {
+func (m *UserModel) Create(email, password, name, enrollment, hostel, phone, branch, year string) (*User, error) {
 	// check if user exists
 	var existingUser User
 	err := m.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&existingUser)
@@ -51,6 +52,7 @@ func (m *UserModel) Create(email, password, name, enrollment, hostel, branch, ye
 		Password:   string(hashedPassword),
 		Name:       name,
 		Enrollment: enrollment,
+		Phone:      phone,
 		Hostel:     hostel,
 		Branch:     branch,
 		Year:       year,
