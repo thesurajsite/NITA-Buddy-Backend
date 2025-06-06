@@ -47,7 +47,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.userModel.Create(input.Email, input.Password, input.Name, input.Enrollment, input.Hostel, input.Branch, input.Year)
+	user, err := h.userModel.Create(input.Email, input.Password, input.Name, input.Enrollment, input.Phone, input.Hostel, input.Branch, input.Year)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
