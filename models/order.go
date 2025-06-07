@@ -31,8 +31,11 @@ func NewOrderModel(collection *mongo.Collection) *OrderModel {
 	return &OrderModel{collection: collection}
 }
 
-func (m *OrderModel) CreateOrder(input Order) (*Order, error) {
+func (m *OrderModel) CreateOrder(store, orderDetails string, placedBy primitive.ObjectID) (*Order, error) {
 
+	status := "NotAccepted"
+	otp := generateOTP()
+	acceptedBy := primitive.NilObjectID
 	customID, err := generateCustomOrderID(m.collection)
 	if err != nil {
 		return nil, err
@@ -40,12 +43,12 @@ func (m *OrderModel) CreateOrder(input Order) (*Order, error) {
 
 	order := &Order{
 		CustomOrderID: customID,
-		Store:         input.Store,
-		OrderDetails:  input.OrderDetails,
-		Status:        input.Status,
-		OTP:           input.OTP,
-		PlacedBy:      input.PlacedBy,
-		AcceptedBy:    input.AcceptedBy,
+		Store:         store,
+		OrderDetails:  orderDetails,
+		Status:        status,
+		OTP:           otp,
+		PlacedBy:      placedBy,
+		AcceptedBy:    acceptedBy,
 		CreatedAt:     time.Now(),
 	}
 
@@ -76,4 +79,10 @@ func generateCustomOrderID(collection *mongo.Collection) (string, error) {
 	}
 
 	return "", fmt.Errorf("failed to generate unique custom order id")
+}
+
+func generateOTP() string {
+	rand.Seed(time.Now().UnixNano())
+	code := rand.Intn(9000) + 1000 // 4-digit otp
+	return fmt.Sprintf("%04d", code)
 }
