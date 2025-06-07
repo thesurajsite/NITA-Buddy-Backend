@@ -12,7 +12,7 @@ import (
 )
 
 // connect() establishes a connection to MongoDB  and returns the client and collections
-func Connect() (*mongo.Client, *mongo.Collection) {
+func Connect() (*mongo.Client, *mongo.Collection, *mongo.Collection) {
 
 	// connect to MongoDB
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -30,6 +30,7 @@ func Connect() (*mongo.Client, *mongo.Collection) {
 	// Initialize Collections
 	db := client.Database("nita_buddy")
 	userCollection := db.Collection("users")
+	orderCollection := db.Collection("orders")
 
 	// check connection by running a query
 	err = userCollection.FindOne(ctx, bson.M{}).Err()
@@ -38,5 +39,5 @@ func Connect() (*mongo.Client, *mongo.Collection) {
 	}
 
 	log.Println("Successfully connected to NITA Buddy Database")
-	return client, userCollection
+	return client, userCollection, orderCollection
 }

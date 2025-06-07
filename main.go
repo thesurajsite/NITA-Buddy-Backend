@@ -19,22 +19,24 @@ func main() {
 		log.Println("No .env file found (likely running in production):", err)
 	}
 
-	// Connect to MaongoDB
-	client, userCollection := database.Connect()
+	// Connect to MongoDB
+	client, userCollection, orderCollection := database.Connect() // returns collection reference
 	defer client.Disconnect(context.Background())
 
 	// Create Models
 	userModel := models.NewUserModel(userCollection)
+	orderModel := models.NewOrderModel(orderCollection)
 
 	// Define your JWT secret key (keep it safe and strong)
 	jwtSecret := []byte("your-secret-key")
 
 	// Create handlers with JWT-based auth
 	authHandler := handlers.NewAuthHandler(userModel, jwtSecret)
+	orderHandler := handlers.NewOrderHandler(orderModel)
 
 	// configure router
 	r := mux.NewRouter()
-	routes.Setup(r, authHandler)
+	routes.Setup(r, authHandler, orderHandler)
 
 	// Start server
 	log.Println("Server starting at port 8080...")
