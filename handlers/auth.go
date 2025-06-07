@@ -166,7 +166,7 @@ func (h *AuthHandler) GetUserIDFromToken(r *http.Request) (primitive.ObjectID, e
 	})
 
 	if err != nil || !token.Valid {
-		return primitive.ObjectID{}, fmt.Errorf("Invalid or Expired token")
+		return primitive.ObjectID{}, fmt.Errorf("invalid or expired token")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)

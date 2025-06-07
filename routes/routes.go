@@ -6,7 +6,7 @@ import (
 )
 
 // Setup configures all the routes for the application
-func Setup(r *mux.Router, authHandler *handlers.AuthHandler) {
+func Setup(r *mux.Router, authHandler *handlers.AuthHandler, orderHandler *handlers.OrderHandler) {
 
 	//Auth Routes
 	r.HandleFunc("/register", authHandler.Register).Methods("POST")
@@ -14,4 +14,7 @@ func Setup(r *mux.Router, authHandler *handlers.AuthHandler) {
 	r.HandleFunc("/logout", authHandler.Logout).Methods("POST")
 
 	r.HandleFunc("/user/details", authHandler.GetUserDetails).Methods("GET")
+
+	// orders
+	r.HandleFunc("/order", orderHandler.PlaceOrder).Methods("POST")
 }
