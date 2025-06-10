@@ -32,7 +32,7 @@ func NewUserModel(collection *mongo.Collection) *UserModel {
 	return &UserModel{collection: collection}
 }
 
-func (m *UserModel) Create(email, password, name, enrollment, hostel, phone, branch, year string) (*User, error) {
+func (m *UserModel) Create(email, password, name, enrollment, phone, hostel, branch, year string) (*User, error) {
 	// check if user exists
 	var existingUser User
 	err := m.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&existingUser)
