@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (h *AuthHandler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 
 	// Get userId from token
 	userID, err := h.GetUserIDFromToken(r)
@@ -13,8 +13,8 @@ func (h *AuthHandler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "Invalid or missing token",
 			"status":  false,
+			"message": "Invalid or missing token",
 			"user":    nil,
 		})
 		return
@@ -26,8 +26,8 @@ func (h *AuthHandler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "user not found",
 			"status":  false,
+			"message": "user not found",
 			"user":    nil,
 		})
 		return
@@ -35,8 +35,8 @@ func (h *AuthHandler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": "user details fetched successfully",
 		"status":  true,
+		"message": "user details fetched successfully",
 		"user":    user,
 	})
 }

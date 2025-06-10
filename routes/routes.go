@@ -13,7 +13,7 @@ func Setup(r *mux.Router, authHandler *handlers.AuthHandler, orderHandler *handl
 	r.HandleFunc("/login", authHandler.Login).Methods("POST")
 	r.HandleFunc("/logout", authHandler.Logout).Methods("POST")
 
-	r.HandleFunc("/user/details", authHandler.GetUserDetails).Methods("GET")
+	r.HandleFunc("/user/profile", authHandler.GetUserProfile).Methods("GET")
 
 	// orders
 	r.HandleFunc("/order", orderHandler.PlaceOrder).Methods("POST")

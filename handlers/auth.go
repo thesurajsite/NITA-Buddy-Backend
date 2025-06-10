@@ -40,8 +40,8 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": err.Error(),
 			"status":  false,
+			"message": err.Error(),
 			"token":   "",
 		})
 		return
@@ -52,8 +52,8 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": err.Error(),
 			"status":  false,
+			"message": err.Error(),
 			"token":   "",
 		})
 		return
@@ -64,8 +64,8 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "Failed to generate token",
 			"status":  false,
+			"message": "Failed to generate token",
 			"token":   "",
 		})
 		return
@@ -73,8 +73,8 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": "User Registered Successfully",
 		"status":  true,
+		"message": "User Registered Successfully",
 		"token":   tokenString,
 	})
 
@@ -91,8 +91,8 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": err.Error(),
 			"status":  false,
+			"message": err.Error(),
 			"token":   "",
 		})
 		return
@@ -103,8 +103,8 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "Invalid Credentials",
 			"status":  false,
+			"message": "Invalid Credentials",
 			"token":   "",
 		})
 		return
@@ -115,8 +115,8 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "Failed to generate token",
 			"status":  false,
+			"message": "Failed to generate token",
 			"token":   "",
 		})
 		return
@@ -124,8 +124,8 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": "Login Successful",
 		"status":  true,
+		"message": "Login Successful",
 		"token":   tokenString,
 	})
 }
