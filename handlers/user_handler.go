@@ -21,7 +21,7 @@ func (h *AuthHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user details from token
-	user, err := h.userModel.GetByID(userID)
+	user, err := h.userModel.GetUserByID(userID)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)

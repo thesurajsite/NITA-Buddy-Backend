@@ -65,3 +65,39 @@ func (h *OrderHandler) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 	})
 
 }
+
+func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
+
+	userID, err := utils.ExtractUserIDFromToken(r)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Unauthorized " + err.Error(),
+			"orders":  nil,
+		})
+		return
+	}
+
+	// Fetch orders from DB
+	orders, err := h.orderModel.GetOrdersByUserID(userID)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Failed to fetch Orders " + err.Error(),
+			"orders":  nil,
+		})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  true,
+		"message": "orders fetched",
+		"orders":  orders,
+	})
+}

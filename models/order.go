@@ -86,3 +86,23 @@ func generateOTP() string {
 	code := rand.Intn(9000) + 1000 // 4-digit otp
 	return fmt.Sprintf("%04d", code)
 }
+
+func (m *OrderModel) GetOrdersByUserID(userID primitive.ObjectID) ([]Order, error) {
+	var orders []Order // slice of name orders, type Order
+
+	cursor, err := m.collection.Find(context.Background(), bson.M{"placed_by": userID})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var order Order
+		if err := cursor.Decode(&order); err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	return orders, nil
+}

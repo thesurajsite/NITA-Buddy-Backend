@@ -84,7 +84,7 @@ func (m *UserModel) VerifyPassword(user *User, password string) bool {
 	return err == nil
 }
 
-func (m *UserModel) GetByID(id primitive.ObjectID) (*User, error) {
+func (m *UserModel) GetUserByID(id primitive.ObjectID) (*User, error) {
 	var user User
 	err := m.collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
 
