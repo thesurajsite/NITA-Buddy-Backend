@@ -76,7 +76,7 @@ func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"status":  false,
 			"message": "Unauthorized " + err.Error(),
-			"orders":  nil,
+			"orders":  []interface{}{},
 		})
 		return
 	}
@@ -89,9 +89,13 @@ func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"status":  false,
 			"message": "Failed to fetch Orders " + err.Error(),
-			"orders":  nil,
+			"orders":  []interface{}{},
 		})
 		return
+	}
+
+	if orders == nil {
+		orders = []models.Order{}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

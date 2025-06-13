@@ -92,16 +92,20 @@ func (m *OrderModel) GetOrdersByUserID(userID primitive.ObjectID) ([]Order, erro
 
 	cursor, err := m.collection.Find(context.Background(), bson.M{"placed_by": userID})
 	if err != nil {
-		return nil, err
+		return []Order{}, err
 	}
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
 		var order Order
 		if err := cursor.Decode(&order); err != nil {
-			return nil, err
+			return []Order{}, err
 		}
 		orders = append(orders, order)
+	}
+
+	if orders == nil {
+		return []Order{}, nil
 	}
 
 	return orders, nil
