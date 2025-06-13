@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/suraj/nitabuddy/models"
 	"github.com/suraj/nitabuddy/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type OrderHandler struct {
@@ -103,5 +105,52 @@ func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 		"status":  true,
 		"message": "orders fetched",
 		"orders":  orders,
+	})
+}
+
+func (h *OrderHandler) CancelMyOrder(w http.ResponseWriter, r *http.Request) {
+
+	userID, err := utils.ExtractUserIDFromToken(r)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Unauthorized: " + err.Error(),
+		})
+		return
+	}
+
+	vars := mux.Vars(r)
+	orderIDstr := vars["id"]
+	orderID, err := primitive.ObjectIDFromHex(orderIDstr)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Invalid Order ID",
+		})
+		return
+	}
+
+	err = h.orderModel.CancelOrder(userID, orderID)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Could not cancel order: " + err.Error(),
+		})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  true,
+		"message": "Order cancelled successfully",
 	})
 }

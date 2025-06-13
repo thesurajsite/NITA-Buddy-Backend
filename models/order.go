@@ -110,3 +110,41 @@ func (m *OrderModel) GetOrdersByUserID(userID primitive.ObjectID) ([]Order, erro
 
 	return orders, nil
 }
+
+func (m *OrderModel) CancelOrder(userID, orderID primitive.ObjectID) error {
+
+	var order Order
+	err := m.collection.FindOne(context.Background(), bson.M{"_id": orderID}).Decode(&order)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return fmt.Errorf("No order found with this ID")
+		}
+		return err
+	}
+
+	if order.PlacedBy != userID {
+		return fmt.Errorf("Unauthorized: You cannot cancel someone else's order")
+	}
+
+	filter := bson.M{
+		"_id":       orderID,
+		"placed_by": userID,
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"status": "Cancelled",
+		},
+	}
+
+	result, err := m.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("No order found with this ID")
+	}
+
+	return nil
+}
