@@ -18,17 +18,22 @@ type Order struct {
 	OrderDetails  string             `bson:"order_details" json:"order_details"`
 	Status        string             `bson:"status" json:"status"`
 	OTP           string             `bson:"otp" json:"otp"`
+	Phone         string             `bson:"phone" json:"phone"`
 	PlacedBy      primitive.ObjectID `bson:"placed_by" json:"placed_by"`
 	AcceptedBy    primitive.ObjectID `bson:"accepted_by" json:"accepted_by"`
 	CreatedAt     time.Time          `bson:"created_at" json:"created_at"`
 }
 
 type OrderModel struct {
-	collection *mongo.Collection
+	collection     *mongo.Collection
+	userCollection *mongo.Collection
 }
 
-func NewOrderModel(collection *mongo.Collection) *OrderModel {
-	return &OrderModel{collection: collection}
+func NewOrderModel(orderCollection, userCollection *mongo.Collection) *OrderModel {
+	return &OrderModel{
+		collection:     orderCollection,
+		userCollection: userCollection,
+	}
 }
 
 func (m *OrderModel) CreateOrder(store, orderDetails string, placedBy primitive.ObjectID) (*Order, error) {
@@ -41,12 +46,21 @@ func (m *OrderModel) CreateOrder(store, orderDetails string, placedBy primitive.
 		return nil, err
 	}
 
+	var userPhone struct {
+		Phone string `bson:"phone"`
+	}
+	err = m.userCollection.FindOne(context.Background(), bson.M{"_id": placedBy}).Decode(&userPhone)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user: %v", err)
+	}
+
 	order := &Order{
 		CustomOrderID: customID,
 		Store:         store,
 		OrderDetails:  orderDetails,
 		Status:        status,
 		OTP:           otp,
+		Phone:         userPhone.Phone,
 		PlacedBy:      placedBy,
 		AcceptedBy:    acceptedBy,
 		CreatedAt:     time.Now(),
