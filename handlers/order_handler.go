@@ -68,6 +68,46 @@ func (h *OrderHandler) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (h *OrderHandler) FetchOtherOrders(w http.ResponseWriter, r *http.Request) {
+	userID, err := utils.ExtractUserIDFromToken(r)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Unauthorized " + err.Error(),
+			"orders":  []interface{}{},
+		})
+		return
+	}
+
+	// Fetch orders from DB
+	orders, err := h.orderModel.GetOtherIncompleteOrders(userID)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Failed to fetch Requests " + err.Error(),
+			"orders":  []interface{}{},
+		})
+		return
+	}
+
+	if orders == nil {
+		orders = []models.Order{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  true,
+		"message": "Requests fetched",
+		"orders":  orders,
+	})
+
+}
+
 func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := utils.ExtractUserIDFromToken(r)

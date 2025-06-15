@@ -87,6 +87,31 @@ func generateOTP() string {
 	return fmt.Sprintf("%04d", code)
 }
 
+func (m *OrderModel) GetOtherIncompleteOrders(userID primitive.ObjectID) ([]Order, error) {
+	var orders []Order
+
+	filter := bson.M{
+		"placed_by": bson.M{"$ne": userID}, // ne : not equal
+		"status":    "Incomplete",
+	}
+
+	cursor, err := m.collection.Find(context.Background(), filter)
+	if err != nil {
+		return []Order{}, err
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var order Order
+		if err := cursor.Decode(&order); err != nil {
+			return []Order{}, err
+		}
+		orders = append(orders, order)
+	}
+
+	return orders, nil
+}
+
 func (m *OrderModel) GetOrdersByUserID(userID primitive.ObjectID) ([]Order, error) {
 	var orders []Order // slice of name orders, type Order
 

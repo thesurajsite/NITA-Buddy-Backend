@@ -17,6 +17,7 @@ func Setup(r *mux.Router, authHandler *handlers.AuthHandler, orderHandler *handl
 
 	// orders
 	r.HandleFunc("/order", orderHandler.PlaceOrder).Methods("POST")
+	r.HandleFunc("/allOrders", orderHandler.FetchOtherOrders).Methods("GET")
 	r.HandleFunc("/myOrders", orderHandler.FetchMyOrders).Methods("GET")
 	r.HandleFunc("/cancelMyOrder/{id}", orderHandler.CancelMyOrder).Methods("DELETE")
 }
