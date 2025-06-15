@@ -92,7 +92,7 @@ func (m *OrderModel) GetOtherIncompleteOrders(userID primitive.ObjectID) ([]Orde
 
 	filter := bson.M{
 		"placed_by": bson.M{"$ne": userID}, // ne : not equal
-		"status":    "Incomplete",
+		"status":    "NotAccepted",
 	}
 
 	cursor, err := m.collection.Find(context.Background(), filter)
