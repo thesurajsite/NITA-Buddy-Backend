@@ -62,7 +62,7 @@ func (h *OrderHandler) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": "Order Placed Successfully",
+		"message": "Request created Successfully",
 		"status":  true,
 	})
 
@@ -90,7 +90,7 @@ func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"status":  false,
-			"message": "Failed to fetch Orders " + err.Error(),
+			"message": "Failed to fetch Requests " + err.Error(),
 			"orders":  []interface{}{},
 		})
 		return
@@ -103,7 +103,7 @@ func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status":  true,
-		"message": "orders fetched",
+		"message": "Requests fetched",
 		"orders":  orders,
 	})
 }
@@ -131,7 +131,7 @@ func (h *OrderHandler) CancelMyOrder(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"status":  false,
-			"message": "Invalid Order ID",
+			"message": "Invalid Request ID",
 		})
 		return
 	}
@@ -143,7 +143,7 @@ func (h *OrderHandler) CancelMyOrder(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"status":  false,
-			"message": "Could not cancel order: " + err.Error(),
+			"message": "Could not cancel Request: " + err.Error(),
 		})
 		return
 	}
@@ -151,6 +151,6 @@ func (h *OrderHandler) CancelMyOrder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status":  true,
-		"message": "Order cancelled successfully",
+		"message": "Request cancelled and Deleted",
 	})
 }

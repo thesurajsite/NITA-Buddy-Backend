@@ -131,18 +131,12 @@ func (m *OrderModel) CancelOrder(userID, orderID primitive.ObjectID) error {
 		"placed_by": userID,
 	}
 
-	update := bson.M{
-		"$set": bson.M{
-			"status": "Cancelled",
-		},
-	}
-
-	result, err := m.collection.UpdateOne(context.Background(), filter, update)
+	result, err := m.collection.DeleteOne(context.Background(), filter)
 	if err != nil {
 		return err
 	}
 
-	if result.MatchedCount == 0 {
+	if result.DeletedCount == 0 {
 		return fmt.Errorf("No order found with this ID")
 	}
 
