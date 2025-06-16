@@ -218,3 +218,28 @@ func (m *OrderModel) AcceptOrder(userID, orderID primitive.ObjectID) error {
 
 	return nil
 }
+
+func (m *OrderModel) GetAcceptedOrders(userID primitive.ObjectID) ([]Order, error) {
+	var orders []Order
+
+	filter := bson.M{
+		"accepted_by": userID,
+		"status":      "Accepted",
+	}
+
+	cursor, err := m.collection.Find(context.Background(), filter)
+	if err != nil {
+		return []Order{}, err
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var order Order
+		if err := cursor.Decode(&order); err != nil {
+			return []Order{}, err
+		}
+		orders = append(orders, order)
+	}
+
+	return orders, nil
+}
