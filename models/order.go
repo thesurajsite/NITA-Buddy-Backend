@@ -184,3 +184,37 @@ func (m *OrderModel) CancelOrder(userID, orderID primitive.ObjectID) error {
 
 	return nil
 }
+
+func (m *OrderModel) AcceptOrder(userID, orderID primitive.ObjectID) error {
+
+	var order Order
+	err := m.collection.FindOne(context.Background(), bson.M{"_id": orderID}).Decode(&order)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return fmt.Errorf("order not found")
+		}
+		return err
+	}
+
+	if order.AcceptedBy != primitive.NilObjectID {
+		return fmt.Errorf("order already accepted")
+	}
+
+	if order.PlacedBy == userID {
+		return fmt.Errorf("can't accept own order")
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"accepted_by": userID,
+			"status":      "Accepted",
+		},
+	}
+
+	_, err = m.collection.UpdateOne(context.Background(), bson.M{"_id": orderID}, update)
+	if err != nil {
+		return fmt.Errorf("failed to accept order: %v", err)
+	}
+
+	return nil
+}

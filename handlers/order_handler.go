@@ -194,3 +194,50 @@ func (h *OrderHandler) CancelMyOrder(w http.ResponseWriter, r *http.Request) {
 		"message": "Request cancelled and Deleted",
 	})
 }
+
+func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
+
+	userID, err := utils.ExtractUserIDFromToken(r)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Unauthorized: " + err.Error(),
+		})
+		return
+	}
+
+	vars := mux.Vars(r)
+	orderIDstr := vars["id"]
+	orderId, err := primitive.ObjectIDFromHex(orderIDstr)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Invalid Request ID",
+		})
+		return
+	}
+
+	err = h.orderModel.AcceptOrder(userID, orderId)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "can't Accept Request: " + err.Error(),
+		})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  true,
+		"message": "Request Accepted",
+	})
+}

@@ -60,7 +60,7 @@ func (h *AuthHandler) GetUserProfileFromID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// Get user details from token
+	// Get user details from id
 	user, err := h.userModel.GetUserByID(userID)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
