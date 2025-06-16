@@ -20,6 +20,7 @@ type Order struct {
 	OTP           string             `bson:"otp" json:"otp"`
 	Phone         string             `bson:"phone" json:"phone"`
 	PlacedBy      primitive.ObjectID `bson:"placed_by" json:"placed_by"`
+	PlacedByName  string             `bson:"placed_by_name" json:"placed_by_name"`
 	AcceptedBy    primitive.ObjectID `bson:"accepted_by" json:"accepted_by"`
 	CreatedAt     time.Time          `bson:"created_at" json:"created_at"`
 }
@@ -46,10 +47,11 @@ func (m *OrderModel) CreateOrder(store, orderDetails string, placedBy primitive.
 		return nil, err
 	}
 
-	var userPhone struct {
+	var userDetails struct {
+		Name  string `bson:"name"`
 		Phone string `bson:"phone"`
 	}
-	err = m.userCollection.FindOne(context.Background(), bson.M{"_id": placedBy}).Decode(&userPhone)
+	err = m.userCollection.FindOne(context.Background(), bson.M{"_id": placedBy}).Decode(&userDetails)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %v", err)
 	}
@@ -60,8 +62,9 @@ func (m *OrderModel) CreateOrder(store, orderDetails string, placedBy primitive.
 		OrderDetails:  orderDetails,
 		Status:        status,
 		OTP:           otp,
-		Phone:         userPhone.Phone,
+		Phone:         userDetails.Phone,
 		PlacedBy:      placedBy,
+		PlacedByName:  userDetails.Name,
 		AcceptedBy:    acceptedBy,
 		CreatedAt:     time.Now(),
 	}
@@ -156,13 +159,13 @@ func (m *OrderModel) CancelOrder(userID, orderID primitive.ObjectID) error {
 	err := m.collection.FindOne(context.Background(), bson.M{"_id": orderID}).Decode(&order)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return fmt.Errorf("No order found with this ID")
+			return fmt.Errorf("no order found with this id")
 		}
 		return err
 	}
 
 	if order.PlacedBy != userID {
-		return fmt.Errorf("Unauthorized: You cannot cancel someone else's order")
+		return fmt.Errorf("unauthorized: you cannot cancel someone else's order")
 	}
 
 	filter := bson.M{
@@ -176,7 +179,7 @@ func (m *OrderModel) CancelOrder(userID, orderID primitive.ObjectID) error {
 	}
 
 	if result.DeletedCount == 0 {
-		return fmt.Errorf("No order found with this ID")
+		return fmt.Errorf("no order found with this id")
 	}
 
 	return nil
