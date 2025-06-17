@@ -34,10 +34,11 @@ func main() {
 	// Create handlers with JWT-based auth
 	authHandler := handlers.NewAuthHandler(userModel, jwtSecret)
 	orderHandler := handlers.NewOrderHandler(orderModel)
+	rewardsHandler := handlers.NewRewardsHandler(rewardsModel)
 
 	// configure router
 	r := mux.NewRouter()
-	routes.Setup(r, authHandler, orderHandler)
+	routes.Setup(r, authHandler, orderHandler, rewardsHandler)
 
 	// Start server
 	log.Println("Server starting at port 8080...")
