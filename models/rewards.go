@@ -47,3 +47,20 @@ func (r *RewardsModel) GetRewardsByUserID(userID primitive.ObjectID) (*Rewards, 
 
 	return &reward, nil
 }
+
+func (r *RewardsModel) UpdateCoins(userID primitive.ObjectID, amount int) (*Rewards, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	update := bson.M{
+		"$inc": bson.M{"coins": amount}, // inc: increment
+	}
+
+	var updatedReward Rewards
+	err := r.collection.FindOneAndUpdate(ctx, bson.M{"_id": userID}, update).Decode(&updatedReward)
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedReward, nil
+}

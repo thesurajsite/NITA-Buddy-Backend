@@ -28,16 +28,27 @@ type Order struct {
 type OrderModel struct {
 	collection     *mongo.Collection
 	userCollection *mongo.Collection
+	rewardsModel   *RewardsModel // Add this field
 }
 
-func NewOrderModel(orderCollection, userCollection *mongo.Collection) *OrderModel {
+func NewOrderModel(orderCollection, userCollection *mongo.Collection, rewardsModel *RewardsModel) *OrderModel {
 	return &OrderModel{
 		collection:     orderCollection,
 		userCollection: userCollection,
+		rewardsModel:   rewardsModel,
 	}
 }
 
 func (m *OrderModel) CreateOrder(store, orderDetails string, placedBy primitive.ObjectID) (*Order, error) {
+
+	reward, err := m.rewardsModel.GetRewardsByUserID(placedBy)
+	if err != nil {
+		return nil, fmt.Errorf("could not retrieve reward info: %v", err)
+	}
+
+	if reward.Coins < 10 {
+		return nil, fmt.Errorf("not enough coins to place the order")
+	}
 
 	status := "NotAccepted"
 	otp := generateOTP()
@@ -245,6 +256,59 @@ func (m *OrderModel) GetAcceptedOrders(userID primitive.ObjectID) ([]Order, erro
 }
 
 // accept order
-//requirements : token, orderID, otp
+//requirements : userID, orderID, otp
 // check : userID==acceptedby, otp==otp, status=accepted,
 // todo : status=completed, reward--, reward++
+
+func (m *OrderModel) CompleteOrder(userID, orderID primitive.ObjectID, otp string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Fetch the order from DB
+	var order Order
+	err := m.collection.FindOne(ctx, bson.M{"_id": orderID}).Decode(&order)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return fmt.Errorf("order not found")
+		}
+		return fmt.Errorf("failed to fetch order: %v", err)
+	}
+
+	// Verify user is the one who accepted the order
+	if order.AcceptedBy != userID {
+		return fmt.Errorf("unauthorized: only the user who accepted the order can complete it")
+	}
+
+	// Verify order is in accepted state
+	if order.Status != "Accepted" {
+		return fmt.Errorf("order is not in accepted state")
+	}
+
+	// Verify OTP
+	if order.OTP != otp {
+		return fmt.Errorf("invalid OTP")
+	}
+
+	// Update order status to Completed
+	update := bson.M{
+		"$set": bson.M{"status": "Completed"},
+	}
+	_, err = m.collection.UpdateOne(ctx, bson.M{"_id": orderID}, update)
+	if err != nil {
+		return fmt.Errorf("failed to update order status: %v", err)
+	}
+
+	// Decrease 10 coins from PlacedBy
+	_, err = m.rewardsModel.UpdateCoins(order.PlacedBy, -10)
+	if err != nil {
+		return fmt.Errorf("failed to deduct coins from order creator: %v", err)
+	}
+
+	// Increase 10 coins to AcceptedBy
+	_, err = m.rewardsModel.UpdateCoins(order.AcceptedBy, 10)
+	if err != nil {
+		return fmt.Errorf("failed to add coins to order accepter: %v", err)
+	}
+
+	return nil
+}

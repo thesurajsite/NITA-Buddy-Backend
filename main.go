@@ -26,7 +26,7 @@ func main() {
 	// Create Models
 	rewardsModel := models.NewRewardsModel(rewardsCollection)
 	userModel := models.NewUserModel(userCollection, rewardsModel)
-	orderModel := models.NewOrderModel(orderCollection, userCollection)
+	orderModel := models.NewOrderModel(orderCollection, userCollection, rewardsModel)
 
 	// Define your JWT secret key (keep it safe and strong)
 	jwtSecret := []byte("your-secret-key")

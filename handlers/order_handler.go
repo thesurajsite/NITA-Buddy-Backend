@@ -279,3 +279,59 @@ func (h *OrderHandler) FetchAcceptedOrders(w http.ResponseWriter, r *http.Reques
 		"orders":  orders,
 	})
 }
+
+func (h *OrderHandler) CompleteOrder(w http.ResponseWriter, r *http.Request) {
+	userID, err := utils.ExtractUserIDFromToken(r)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Unauthorized: " + err.Error(),
+		})
+		return
+	}
+
+	var input struct {
+		OrderID string `json:"order_id"`
+		OTP     string `json:"otp"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Invalid input: " + err.Error(),
+		})
+		return
+	}
+
+	orderObjectID, err := primitive.ObjectIDFromHex(input.OrderID)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": "Invalid Order ID",
+		})
+		return
+	}
+
+	err = h.orderModel.CompleteOrder(userID, orderObjectID, input.OTP)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  true,
+		"message": "Order completed successfully. Rewards updated.",
+	})
+}
