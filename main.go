@@ -20,11 +20,12 @@ func main() {
 	}
 
 	// Connect to MongoDB
-	client, userCollection, orderCollection := database.Connect() // returns collection reference
+	client, userCollection, orderCollection, rewardsCollection := database.Connect() // returns collection reference
 	defer client.Disconnect(context.Background())
 
 	// Create Models
-	userModel := models.NewUserModel(userCollection)
+	rewardsModel := models.NewRewardsModel(rewardsCollection)
+	userModel := models.NewUserModel(userCollection, rewardsModel)
 	orderModel := models.NewOrderModel(orderCollection, userCollection)
 
 	// Define your JWT secret key (keep it safe and strong)

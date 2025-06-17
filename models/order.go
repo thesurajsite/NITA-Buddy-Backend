@@ -243,3 +243,8 @@ func (m *OrderModel) GetAcceptedOrders(userID primitive.ObjectID) ([]Order, erro
 
 	return orders, nil
 }
+
+// accept order
+//requirements : token, orderID, otp
+// check : userID==acceptedby, otp==otp, status=accepted,
+// todo : status=completed, reward--, reward++

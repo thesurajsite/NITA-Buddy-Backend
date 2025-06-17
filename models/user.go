@@ -25,11 +25,15 @@ type User struct {
 }
 
 type UserModel struct {
-	collection *mongo.Collection
+	collection   *mongo.Collection
+	rewardsModel *RewardsModel // inject RewardsModel
 }
 
-func NewUserModel(collection *mongo.Collection) *UserModel {
-	return &UserModel{collection: collection}
+func NewUserModel(collection *mongo.Collection, rewardsModel *RewardsModel) *UserModel {
+	return &UserModel{
+		collection:   collection,
+		rewardsModel: rewardsModel,
+	}
 }
 
 func (m *UserModel) Create(email, password, name, enrollment, phone, hostel, branch, year string) (*User, error) {
@@ -65,6 +69,12 @@ func (m *UserModel) Create(email, password, name, enrollment, phone, hostel, bra
 	}
 
 	user.ID = result.InsertedID.(primitive.ObjectID)
+
+	err = m.rewardsModel.CreateRewardsOnSignup(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
