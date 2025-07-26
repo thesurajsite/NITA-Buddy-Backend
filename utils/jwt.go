@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var JwtSecret = []byte("mniSKV!!@@##$$%%^^&&**(())") // replace with actual secret key
+var JwtSecret = []byte("my-secret-key") // replace with actual secret key
 
 // ExtractUserIDFromToken extracts user ID from the JWT token in the request
 func ExtractUserIDFromToken(r *http.Request) (primitive.ObjectID, error) {
