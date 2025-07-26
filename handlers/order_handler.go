@@ -6,24 +6,25 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/suraj/nitabuddy/models"
-	"github.com/suraj/nitabuddy/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type OrderHandler struct {
-	orderModel *models.OrderModel
+	orderModel  *models.OrderModel
+	authHandler *AuthHandler // Add this field
 }
 
-func NewOrderHandler(orderModel *models.OrderModel) *OrderHandler {
+func NewOrderHandler(orderModel *models.OrderModel, authHandler *AuthHandler) *OrderHandler {
 	return &OrderHandler{
-		orderModel: orderModel,
+		orderModel:  orderModel,
+		authHandler: authHandler, // Initialize it
 	}
 }
 
 func (h *OrderHandler) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 
-	// Check for valid user
-	userID, err := utils.ExtractUserIDFromToken(r)
+	// Check for valid user - USE authHandler instead of utils
+	userID, err := h.authHandler.GetUserIDFromToken(r)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -69,7 +70,7 @@ func (h *OrderHandler) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *OrderHandler) FetchOtherOrders(w http.ResponseWriter, r *http.Request) {
-	userID, err := utils.ExtractUserIDFromToken(r)
+	userID, err := h.authHandler.GetUserIDFromToken(r)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -110,7 +111,7 @@ func (h *OrderHandler) FetchOtherOrders(w http.ResponseWriter, r *http.Request) 
 
 func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 
-	userID, err := utils.ExtractUserIDFromToken(r)
+	userID, err := h.authHandler.GetUserIDFromToken(r)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -150,7 +151,7 @@ func (h *OrderHandler) FetchMyOrders(w http.ResponseWriter, r *http.Request) {
 
 func (h *OrderHandler) CancelMyOrder(w http.ResponseWriter, r *http.Request) {
 
-	userID, err := utils.ExtractUserIDFromToken(r)
+	userID, err := h.authHandler.GetUserIDFromToken(r)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -197,7 +198,7 @@ func (h *OrderHandler) CancelMyOrder(w http.ResponseWriter, r *http.Request) {
 
 func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
 
-	userID, err := utils.ExtractUserIDFromToken(r)
+	userID, err := h.authHandler.GetUserIDFromToken(r)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -244,7 +245,7 @@ func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
 
 func (h *OrderHandler) FetchAcceptedOrders(w http.ResponseWriter, r *http.Request) {
 
-	userID, err := utils.ExtractUserIDFromToken(r)
+	userID, err := h.authHandler.GetUserIDFromToken(r)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -281,7 +282,7 @@ func (h *OrderHandler) FetchAcceptedOrders(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *OrderHandler) CompleteOrder(w http.ResponseWriter, r *http.Request) {
-	userID, err := utils.ExtractUserIDFromToken(r)
+	userID, err := h.authHandler.GetUserIDFromToken(r)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)

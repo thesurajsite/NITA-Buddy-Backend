@@ -29,12 +29,12 @@ func main() {
 	orderModel := models.NewOrderModel(orderCollection, userCollection, rewardsModel)
 
 	// Define your JWT secret key (keep it safe and strong)
-	jwtSecret := []byte("your-secret-key")
+	jwtSecret := []byte("my-secret-key")
 
 	// Create handlers with JWT-based auth
 	authHandler := handlers.NewAuthHandler(userModel, jwtSecret)
-	orderHandler := handlers.NewOrderHandler(orderModel)
-	rewardsHandler := handlers.NewRewardsHandler(rewardsModel)
+	orderHandler := handlers.NewOrderHandler(orderModel, authHandler)       // Pass authHandler
+	rewardsHandler := handlers.NewRewardsHandler(rewardsModel, authHandler) // Pass authHandler
 
 	// configure router
 	r := mux.NewRouter()

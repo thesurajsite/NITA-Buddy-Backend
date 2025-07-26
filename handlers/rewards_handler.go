@@ -6,23 +6,24 @@ import (
 	"time"
 
 	"github.com/suraj/nitabuddy/models"
-	"github.com/suraj/nitabuddy/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type RewardsHandler struct {
 	rewardsModel *models.RewardsModel
+	authHandler  *AuthHandler // Add this field
 }
 
-func NewRewardsHandler(rewardsModel *models.RewardsModel) *RewardsHandler {
+func NewRewardsHandler(rewardsModel *models.RewardsModel, authHandler *AuthHandler) *RewardsHandler {
 	return &RewardsHandler{
 		rewardsModel: rewardsModel,
+		authHandler:  authHandler, // Initialize it
 	}
 }
 
 func (h *RewardsHandler) FetchRewardsByID(w http.ResponseWriter, r *http.Request) {
 
-	userID, err := utils.ExtractUserIDFromToken(r)
+	userID, err := h.authHandler.GetUserIDFromToken(r) // Use authHandler instead of utils
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
